@@ -101,6 +101,10 @@ func encodeDeckToBytes(deck Deck) ([]byte, error) {
 
 		bytes, err = addCardToBuffer(bytes, card.Count, card.ID-prevCardID)
 
+		if err != nil {
+			return nil, errors.New("Error while adding card to buffer")
+		}
+		
 		prevCardID = card.ID
 	}
 
