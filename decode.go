@@ -14,13 +14,11 @@ func decode(deckCode string) (Deck, error) {
 
 	deck, err := deckBytesToStruct(deckBytes)
 
-
 	return deck, err
 }
 
+func deckStringToBytes(deckCode string) ([]byte, error) {
 
-func deckStringToBytes(deckCode string) ([]byte, error){
-	
 	if !strings.HasPrefix(deckCode, Prefix) {
 		return nil, errors.New("No prefix on deck code")
 	}
@@ -30,7 +28,6 @@ func deckStringToBytes(deckCode string) ([]byte, error){
 	deckCode = strings.Replace(deckCode, "-", "/", -1)
 	deckCode = strings.Replace(deckCode, "_", "=", -1)
 
-
 	bytes, err := base64.StdEncoding.DecodeString(deckCode)
 	if err != nil {
 		return nil, err
@@ -38,7 +35,6 @@ func deckStringToBytes(deckCode string) ([]byte, error){
 
 	return bytes, nil
 }
-
 
 func deckBytesToStruct(bytes []byte) (Deck, error) {
 
@@ -56,7 +52,6 @@ func deckBytesToStruct(bytes []byte) (Deck, error) {
 	checksum := int(bytes[currentByteIndex])
 	currentByteIndex++
 
-
 	stringLength := 0
 	if version > 1 {
 		stringLength = int(bytes[currentByteIndex])
@@ -64,10 +59,8 @@ func deckBytesToStruct(bytes []byte) (Deck, error) {
 	}
 	totalCardBytes := totalBytes - stringLength
 
-
-
 	computedChecksum := 0
-	
+
 	for i := currentByteIndex; i < totalCardBytes; i++ {
 		computedChecksum += int(bytes[i])
 	}
@@ -76,7 +69,7 @@ func deckBytesToStruct(bytes []byte) (Deck, error) {
 	if checksum != masked {
 		return Deck{}, errors.New("Checksum error")
 	}
-	
+
 	heroCount, err := readVarEncodedUint32(versionAndHeroes, 3, bytes, &currentByteIndex, totalCardBytes)
 
 	if err != nil {
@@ -94,11 +87,10 @@ func deckBytesToStruct(bytes []byte) (Deck, error) {
 		}
 
 		heroes = append(heroes, Hero{
-			ID: card.ID,
+			ID:   card.ID,
 			Turn: card.Count,
 		})
 	}
-
 
 	var cards []Card
 	prevCardBase = 0
@@ -118,9 +110,9 @@ func deckBytesToStruct(bytes []byte) (Deck, error) {
 	}
 
 	return Deck{
-		Name: html.EscapeString(name),
+		Name:   html.EscapeString(name),
 		Heroes: heroes,
-		Cards: cards,
+		Cards:  cards,
 	}, nil
 }
 
@@ -151,11 +143,10 @@ func readSerializedCard(bytes []byte, startIndex *int, endIndex int, prevCardBas
 		outCount = int(outCountExtended)
 	}
 
-
 	*prevCardBase = outCardID
 
-	return Card {
-		ID: outCardID,
+	return Card{
+		ID:    outCardID,
 		Count: outCount,
 	}, nil
 }

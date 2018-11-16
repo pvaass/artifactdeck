@@ -27,14 +27,13 @@ func readVarEncodedUint32(baseValue int, baseBits int, data []byte, startIndex *
 
 	}
 
-
 	return outValue, nil
 }
 
 func readBitsChunk(chunk int, numBits int, currShift int, outBits *int) bool {
 	continueBit := 1 << uint(numBits)
-	newBits := chunk & (continueBit -1)
-	
+	newBits := chunk & (continueBit - 1)
+
 	*outBits |= (newBits << uint(currShift))
 
 	return (chunk & continueBit) != 0

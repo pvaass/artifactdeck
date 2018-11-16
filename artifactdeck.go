@@ -10,23 +10,22 @@ const headerSize = 3
 
 // Hero A hero in a deck
 type Hero struct {
-	ID int
+	ID   int
 	Turn int
 }
 
 // Card A card in a Deck
 type Card struct {
-	ID int
+	ID    int
 	Count int
 }
 
 // Deck The unencoded deck
 type Deck struct {
-	Name string
+	Name   string
 	Heroes []Hero
-	Cards []Card
+	Cards  []Card
 }
-
 
 // MarshalText Encodes a Deck struct to a base64 encoded byte array
 func (deck *Deck) MarshalText() ([]byte, error) {
@@ -34,7 +33,6 @@ func (deck *Deck) MarshalText() ([]byte, error) {
 
 	return []byte(text), err
 }
-
 
 // UnmarshalText Decodes a base64 encoded byte array to a Deck struct
 func (deck *Deck) UnmarshalText(text []byte) error {
@@ -44,7 +42,7 @@ func (deck *Deck) UnmarshalText(text []byte) error {
 		return err
 	}
 
-	*deck = decoded	
+	*deck = decoded
 
 	return nil
 }

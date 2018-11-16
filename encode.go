@@ -21,7 +21,6 @@ func encode(deck Deck) (string, error) {
 	return deckCode, nil
 }
 
-
 func encodeDeckToBytes(deck Deck) ([]byte, error) {
 
 	sort.Slice(deck.Heroes, func(i, j int) bool {
@@ -31,19 +30,16 @@ func encodeDeckToBytes(deck Deck) ([]byte, error) {
 		return deck.Cards[i].ID < deck.Cards[j].ID
 	})
 
-
 	heroCount := len(deck.Heroes)
 
-
 	bytes := []byte{}
-	version := Version << 4 | extractNBitsWithCarry(heroCount, 3)
+	version := Version<<4 | extractNBitsWithCarry(heroCount, 3)
 
 	ok, bytes := addByte(bytes, version)
 
 	if !ok {
 		return nil, errors.New("Incorrect version")
 	}
-
 
 	dummyChecksum := 0
 	checksumByte := len(bytes)
@@ -53,9 +49,8 @@ func encodeDeckToBytes(deck Deck) ([]byte, error) {
 		return nil, errors.New("Can't append dummy checksum")
 	}
 
-	
 	nameLength := 0
-	if len(deck.Name) > 0  {
+	if len(deck.Name) > 0 {
 		sanitizedName := html.EscapeString(deck.Name)
 		byteString := []byte(sanitizedName)
 
@@ -64,8 +59,7 @@ func encodeDeckToBytes(deck Deck) ([]byte, error) {
 		} else {
 			deck.Name = string(byteString)
 		}
-		
-	
+
 		nameLength = len(deck.Name)
 	}
 
@@ -79,7 +73,6 @@ func encodeDeckToBytes(deck Deck) ([]byte, error) {
 		return nil, errors.New("Can't append length of deck name")
 	}
 
-
 	prevCardID := 0
 	for currentHero := 0; currentHero < heroCount; currentHero++ {
 		hero := deck.Heroes[currentHero]
@@ -87,7 +80,7 @@ func encodeDeckToBytes(deck Deck) ([]byte, error) {
 			return nil, errors.New("Can't have hero with turn 0")
 		}
 
-		bytes, err = addCardToBuffer(bytes, hero.Turn, hero.ID - prevCardID)
+		bytes, err = addCardToBuffer(bytes, hero.Turn, hero.ID-prevCardID)
 		if err != nil {
 			return nil, errors.New("Can't add card to buffer")
 		}
@@ -106,7 +99,7 @@ func encodeDeckToBytes(deck Deck) ([]byte, error) {
 			return nil, errors.New("Can't have card with id < 0")
 		}
 
-		bytes, err = addCardToBuffer(bytes, card.Count, card.ID - prevCardID)
+		bytes, err = addCardToBuffer(bytes, card.Count, card.ID-prevCardID)
 
 		prevCardID = card.ID
 	}
@@ -121,7 +114,7 @@ func encodeDeckToBytes(deck Deck) ([]byte, error) {
 		}
 	}
 
-	fullChecksum := computeChecksum(bytes, preStringByteCount - headerSize)
+	fullChecksum := computeChecksum(bytes, preStringByteCount-headerSize)
 	smallChecksum := fullChecksum & 0x0FF
 
 	bytes[checksumByte] = byte(smallChecksum)
